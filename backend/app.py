@@ -29,16 +29,21 @@ print(f'[CONFIG] index.html exists: {os.path.exists(os.path.join(FRONTEND_DIR, "
 # CONFIG — edit directly or use environment variables
 # ============================================================
 
-DB_CONFIG = {
-    "host":     os.getenv("DB_HOST",  "localhost"),
-    "port":     int(os.getenv("DB_PORT", 5432)),
-    "database": os.getenv("DB_NAME",  "taller_iot"),
-    "user":     os.getenv("DB_USER",  "postgres"),
-    "password": os.getenv("DB_PASS",  "carranza06"),
-}
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-TELEGRAM_TOKEN   = os.getenv("TELEGRAM_TOKEN",   "8935796677:AAFi5wLLHmvCTeJNGtV67UUMfRmxEaE_3K0")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "5992449522")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
+# DB_CONFIG = {
+#     "host":     os.getenv("DB_HOST",  "localhost"),
+#     "port":     int(os.getenv("DB_PORT", 5432)),
+#     "database": os.getenv("DB_NAME",  "taller_iot"),
+#     "user":     os.getenv("DB_USER",  "postgres"),
+#     "password": os.getenv("DB_PASS",  "carranza06"),
+# }
+
+# TELEGRAM_TOKEN   = os.getenv("TELEGRAM_TOKEN",   "8935796677:AAFi5wLLHmvCTeJNGtV67UUMfRmxEaE_3K0")
+# TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "5992449522")
 
 THRESHOLDS = {
     "temperature": 35.0,
@@ -53,7 +58,8 @@ THRESHOLDS = {
 # ============================================================
 
 def get_db():
-    return psycopg2.connect(**DB_CONFIG)
+    # return psycopg2.connect(**DB_CONFIG)
+    return psycopg2.connect(DATABASE_URL)
 
 def query(sql, params=(), fetchone=False, fetchall=False, commit=False):
     conn = get_db()
