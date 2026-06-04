@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import psycopg2
-import psycopg2.extras
+import psycopg
+import psycopg.extras
 from datetime import datetime, timedelta
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -59,13 +59,13 @@ THRESHOLDS = {
 
 def get_db():
     # return psycopg2.connect(**DB_CONFIG)
-    return psycopg2.connect(DATABASE_URL)
+    return psycopg.connect(DATABASE_URL)
 
 def query(sql, params=(), fetchone=False, fetchall=False, commit=False):
     conn = get_db()
     try:
         with conn:
-            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            with conn.cursor(cursor_factory=psycopg.extras.RealDictCursor) as cur:
                 cur.execute(sql, params)
                 if commit:
                     return None
