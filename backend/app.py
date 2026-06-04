@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import psycopg
-import psycopg.extras
+from psycopg.rows import dict_row
 from datetime import datetime, timedelta
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -61,18 +61,38 @@ def get_db():
     # return psycopg2.connect(**DB_CONFIG)
     return psycopg.connect(DATABASE_URL)
 
+# def query(sql, params=(), fetchone=False, fetchall=False, commit=False):
+#     conn = get_db()
+#     try:
+#         with conn:
+#             with conn.cursor(cursor_factory=psycopg.extras.RealDictCursor) as cur:
+#                 cur.execute(sql, params)
+#                 if commit:
+#                     return None
+#                 if fetchone:
+#                     return cur.fetchone()
+#                 if fetchall:
+#                     return cur.fetchall()
+#     finally:
+#         conn.close()
+
 def query(sql, params=(), fetchone=False, fetchall=False, commit=False):
     conn = get_db()
+
     try:
         with conn:
-            with conn.cursor(cursor_factory=psycopg.extras.RealDictCursor) as cur:
+            with conn.cursor(row_factory=dict_row) as cur:
                 cur.execute(sql, params)
+
                 if commit:
                     return None
+
                 if fetchone:
                     return cur.fetchone()
+
                 if fetchall:
                     return cur.fetchall()
+
     finally:
         conn.close()
 
