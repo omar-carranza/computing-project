@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Automotive Monitoring System</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<!-- Tailwind (utility resets + helpers) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Custom styles -->
+<link rel="stylesheet" href="css/style.css"/>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     HEADER
+══════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-left">
+    <i class="fa-solid fa-car-wrench" style="font-size:1.4rem;opacity:.9"></i>
+    <div>
+      <div class="header-logo">Automotive Monitoring System</div>
+      <div class="header-sub">Real-time monitoring of environmental conditions</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      LIVE
+    </div>
+    <div style="text-align:right">
+      <div class="header-clock" id="hdr-time">—</div>
+      <div style="font-size:.68rem;opacity:.65" id="hdr-date">—</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE
+══════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <!-- Last update bar -->
+  <div class="flex items-center justify-between mb-3">
+    <p class="section-title" style="margin-bottom:0">
+      <i class="fa-solid fa-signal"></i> Real-Time Readings
+    </p>
+    <span id="last-update" style="font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace">—</span>
+  </div>
+
+  <!-- ── Metric Cards ────────────────────────────────── -->
+  <div class="metrics-grid mb-4">
+
+    <!-- Temperature -->
+    <div class="metric-card state-ok" id="card-temperature">
+      <div class="metric-icon icon-blue">
+        <i class="fa-solid fa-temperature-three-quarters"></i>
+      </div>
+      <div class="metric-label">Temperature</div>
+      <div>
+        <span class="metric-value" id="val-temperature">—</span>
+        <span class="metric-unit">°C</span>
+      </div>
+      <span class="metric-status status-ok" id="state-temperature">
+        <i class="fa-solid fa-circle-check"></i> Normal
+      </span>
+      <div class="metric-limit">Limit: &lt; 35.0 °C</div>
+      <div class="sparkline" style="height:40px">
+        <canvas id="temperature-spark"></canvas>
+      </div>
+    </div>
+
+    <!-- Humidity -->
+    <div class="metric-card state-ok" id="card-humidity">
+      <div class="metric-icon icon-teal">
+        <i class="fa-solid fa-droplet"></i>
+      </div>
+      <div class="metric-label">Humidity</div>
+      <div>
+        <span class="metric-value" id="val-humidity">—</span>
+        <span class="metric-unit">%</span>
+      </div>
+      <span class="metric-status status-ok" id="state-humidity">
+        <i class="fa-solid fa-circle-check"></i> Normal
+      </span>
+      <div class="metric-limit">Limit: &lt; 80.0 %</div>
+      <div class="sparkline" style="height:40px">
+        <canvas id="humidity-spark"></canvas>
+      </div>
+    </div>
+
+    <!-- Pressure -->
+    <div class="metric-card state-ok" id="card-pressure">
+      <div class="metric-icon icon-amber">
+        <i class="fa-solid fa-gauge-high"></i>
+      </div>
+      <div class="metric-label">Pressure</div>
+      <div>
+        <span class="metric-value" id="val-pressure">—</span>
+        <span class="metric-unit">hPa</span>
+      </div>
+      <span class="metric-status status-ok" id="state-pressure">
+        <i class="fa-solid fa-circle-check"></i> Normal
+      </span>
+      <div class="metric-limit">Limit: &lt; 1080 hPa</div>
+      <div class="sparkline" style="height:40px">
+        <canvas id="pressure-spark"></canvas>
+      </div>
+    </div>
+
+    <!-- Sound Level -->
+    <div class="metric-card state-ok" id="card-sound_level">
+      <div class="metric-icon icon-purple">
+        <i class="fa-solid fa-volume-high"></i>
+      </div>
+      <div class="metric-label">Sound Level</div>
+      <div>
+        <span class="metric-value" id="val-sound_level">—</span>
+        <span class="metric-unit">AO</span>
+      </div>
+      <span class="metric-status status-ok" id="state-sound_level">
+        <i class="fa-solid fa-circle-check"></i> Normal
+      </span>
+      <div class="metric-limit">Limit: &lt; 3,000 AO</div>
+      <div class="sparkline" style="height:40px">
+        <canvas id="sound_level-spark"></canvas>
+      </div>
+    </div>
+
+  </div><!-- /metrics-grid -->
+
+  <!-- ── Main grid: Charts + Sidebar ───────────────── -->
+  <div class="main-grid mb-4">
+
+    <!-- Left: Chart + Records -->
+    <div style="display:flex;flex-direction:column;gap:1rem">
+
+      <!-- Chart Card -->
+      <div class="card">
+        <div class="card-body">
+          <div class="flex items-center justify-between mb-3">
+            <p class="section-title" style="margin-bottom:0">
+              <i class="fa-solid fa-chart-line"></i> Sensor History
+            </p>
+            <div class="chart-tabs">
+              <button class="tab-btn active" data-chart="temp">Temperature</button>
+              <button class="tab-btn" data-chart="hum">Humidity</button>
+              <button class="tab-btn" data-chart="pres">Pressure</button>
+              <button class="tab-btn" data-chart="sound">Sound</button>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="main-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Records Table -->
+      <div class="card">
+        <div class="card-body">
+          <p class="section-title">
+            <i class="fa-solid fa-table-list"></i> Sensor Records
+          </p>
+          <div class="overflow-auto">
+            <table class="records-table">
+              <thead>
+                <tr>
+                  <th>Date &amp; Time</th>
+                  <th>Temperature (°C)</th>
+                  <th>Humidity (%)</th>
+                  <th>Pressure (hPa)</th>
+                  <th>Sound Level (AO)</th>
+                </tr>
+              </thead>
+              <tbody id="records-tbody">
+                <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1.5rem">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- Right: Alerts + Scheduler -->
+    <div style="display:flex;flex-direction:column;gap:1rem">
+
+      <!-- Alerts -->
+      <div class="card">
+        <div class="card-body" style="padding-bottom:.5rem">
+          <p class="section-title">
+            <i class="fa-solid fa-bell"></i> Alert History
+          </p>
+        </div>
+        <div id="alert-list" style="max-height:320px;overflow-y:auto">
+          <div style="padding:1.25rem;text-align:center;color:var(--muted);font-size:.82rem">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Scheduler / Calendar -->
+      <div class="card scheduler-card">
+        <div class="card-body">
+          <p class="section-title">
+            <i class="fa-solid fa-calendar-days"></i> Schedule Telegram Summary
+          </p>
+
+          <!-- Calendar -->
+          <div class="cal-header">
+            <button class="cal-nav" id="cal-prev"><i class="fa-solid fa-chevron-left"></i></button>
+            <span class="cal-title" id="cal-title">—</span>
+            <button class="cal-nav" id="cal-next"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+
+          <!-- Schedule form -->
+          <div class="schedule-form mt-3">
+            <div>
+              <div class="form-label">Selected Date</div>
+              <input id="schedule-date" type="date" class="form-input"/>
+            </div>
+            <div>
+              <div class="form-label">Time (HH:MM)</div>
+              <input id="schedule-time" type="time" class="form-input"/>
+            </div>
+            <button id="btn-schedule" class="btn-schedule">
+              <i class="fa-solid fa-paper-plane"></i> Schedule Summary
+            </button>
+          </div>
+
+          <!-- Scheduled jobs list -->
+          <div class="scheduled-list">
+            <div class="section-title mt-3" style="margin-bottom:.5rem">
+              <i class="fa-regular fa-clock"></i> Upcoming Summaries
+            </div>
+            <div id="scheduled-jobs">
+              <p style="font-size:.75rem;color:var(--muted)">No scheduled summaries.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /right -->
+
+  </div><!-- /main-grid -->
+
+  <!-- ── Hourly Averages ────────────────────────────── -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="flex items-center justify-between mb-3">
+        <p class="section-title" style="margin-bottom:0">
+          <i class="fa-solid fa-clock-rotate-left"></i> Hourly Averages
+        </p>
+        <button id="btn-compute-now" style="background:var(--primary-lt);color:var(--primary);border:none;padding:.3rem .75rem;border-radius:8px;font-size:.75rem;font-weight:600;cursor:pointer">
+          <i class="fa-solid fa-calculator"></i> Compute Now
+        </button>
+      </div>
+      <div class="overflow-auto">
+        <table class="avg-table">
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Avg Temp (°C)</th>
+              <th>Avg Humidity (%)</th>
+              <th>Avg Pressure (hPa)</th>
+              <th>Avg Sound (AO)</th>
+            </tr>
+          </thead>
+          <tbody id="avg-tbody">
+            <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:1rem">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- JS -->
+<script src="js/dashboard.js"></script>
+</body>
+</html>
