@@ -81,21 +81,3 @@ POST `/api/schedule`
 Use the calendar in the dashboard — select a date and time, click "Schedule Summary". The bot sends a full summary to Telegram at that moment.
 
 ---
-
-## AWS Free Tier Deployment
-
-```bash
-# 1. EC2 t2.micro (Ubuntu 22.04) — open port 5000 in Security Group
-# 2. Upload project
-scp -r taller-iot-v2/ ubuntu@YOUR_EC2_IP:/home/ubuntu/
-
-# 3. Install
-sudo apt update && sudo apt install python3-pip postgresql -y
-cd taller-iot-v2/backend
-pip3 install -r requirements.txt
-
-# 4. Run (stays alive after SSH close)
-nohup python3 app.py &
-
-# 5. Update ESP32 SERVER_URL to your EC2 public IP
-```
